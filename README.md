@@ -1,7 +1,7 @@
 # Домашнее задание к занятию «Очереди RabbitMQ»
 Выполнил: Кочнев Михаил
 # Задание 1. Установка RabbitMQ
-![Установка RabbitMQ]()
+![Установка RabbitMQ](https://github.com/user-attachments/assets/7e04db4f-6e6e-4d16-91a2-1a6a8372748a)
 # Задание 2. Отправка и получение сообщений
 ![запуск скриптов](https://github.com/user-attachments/assets/f9ce610c-f4dc-4d54-b8a2-2eceeba4d1a5)
 ![hello](https://github.com/user-attachments/assets/041f7212-fb96-459c-93a3-a30a223ebcbb)
