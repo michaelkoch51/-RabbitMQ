@@ -1,13 +1,19 @@
-# -RabbitMQ
-Отчёт о настройке и тестировании кластера RabbitMQ
-Дата: 07.05.2026
-Исполнитель: Кочнев Михаил
+# Домашнее задание к занятию «Очереди RabbitMQ»
+Выполнил: Кочнев Михаил
+# Задание 1. Установка RabbitMQ
+![Установка RabbitMQ]()
+# Задание 2. Отправка и получение сообщений
+![запуск скриптов](https://github.com/user-attachments/assets/f9ce610c-f4dc-4d54-b8a2-2eceeba4d1a5)
+![hello](https://github.com/user-attachments/assets/041f7212-fb96-459c-93a3-a30a223ebcbb)
+# Задание 3. Подготовка HA кластера
+![политика ha-all](https://github.com/user-attachments/assets/412066cb-c8fb-4c40-96d1-fa599e511dac)
+![ha-all](https://github.com/user-attachments/assets/22c239a7-82ae-4148-b7f5-eb2f96b6e8ed)
+![rabbitmqctl cluster_status](https://github.com/user-attachments/assets/63678db1-90a6-4c55-8814-b0c56baaf2d6)
+![rabbitmqctl cluster_status](https://github.com/user-attachments/assets/ecc72cf1-ea9b-4150-a099-dbf89a3cbbc2)
+![1](https://github.com/user-attachments/assets/6c73a9eb-1431-48ff-a9a6-fdc904302c21)
+![2](https://github.com/user-attachments/assets/b5d171b4-1a9c-4155-867b-215ff366f7e0)
+![3](https://github.com/user-attachments/assets/02d08852-d64d-4418-bdbe-859d195148f5)
 
-Цель работы
-Настроить кластер RabbitMQ из двух нод с HA‑репликацией очередей и протестировать его отказоустойчивость.
-
-Выполненные шаги
-Шаг 1. Создание кластера
 
 Запущены две ноды RabbitMQ в Docker‑контейнерах: rmq01 и rmq02.
 
@@ -25,57 +31,13 @@ rabbitmqctl start_app.
 
 Результат: кластер успешно создан, обе ноды синхронизированы.
 
-Шаг 2. Настройка HA‑политики
+Настройка HA‑политики
 
 Выполнена команда для создания политики высокой доступности:
 
 bash
 docker exec rabbitmq-cluster-test-rmq01-1 rabbitmqctl set_policy ha-all ".*" '{"ha-mode":"all"}' --apply-to queues
 Параметры политики:
-
-Name: ha-all;
-
-Pattern: .* (применяется ко всем очередям);
-
-Apply to: queues;
-
-Definition: {"ha-mode":"all"} (репликация на все ноды кластера).
-
-Подтверждение: политика создана и активна (проверено через веб‑интерфейс и командой rabbitmqctl list_policies).
-
-Шаг 3. Проверка репликации очереди
-
-Для проверки использованы несколько методов:
-
-HTTP API: выполнен запрос:
-
-bash
-curl -u admin:adminpass http://localhost:15672/api/queues/%2F/hello
-Ключевые поля в ответе:
-
-"policy": "ha-all" — политика применена;
-
-"effective_policy_definition": {"ha-mode":"all"} — режим репликации задан корректно;
-
-"node": "rabbit@rmq02" — главная нода (master);
-
-"slave_nodes": ["rabbit@rmq01"] — нода с репликой;
-
-"synchronised_slave_nodes": ["rabbit@rmq01"] — реплика синхронизирована.
-
-Веб‑интерфейс:
-
-открыта страница http://localhost:15672 → Queues → hello;
-
-подтверждена информация о репликации (Master/Slaves или Replicas/Mirroring).
-
-rabbitmqctl:
-
-команда rabbitmqctl list_queues name messages policy показала, что к очереди hello применена политика ha-all.
-
-Вывод: HA‑репликация работает корректно — очередь существует на обеих нодах.
-
-Шаг 4. Тест отказоустойчивости
 
 Сценарий: отключение первой ноды (rmq01) и работа через вторую ноду (rmq02).
 
@@ -116,35 +78,4 @@ HA‑политика	Применена	Поле "policy": "ha-all" в JSON, в
 Репликация очереди	Работает	Поля "slave_nodes" и "synchronised_slave_nodes" в JSON
 Отказоустойчивость	Подтверждена	Получение сообщения при отключённой rmq01
 Восстановление после сбоя	Успешно	Обе ноды активны в Overview, репликация восстановлена
-Скриншоты
-Созданы следующие скриншоты:
 
-1 — вывод cluster_status с двумя нодами (rmq01, rmq02).
-
-2 — веб‑интерфейс (Overview) с двумя активными нодами.
-
-3 — раздел Policies с политикой ha-all.
-
-4 — детальная страница очереди hello с информацией о репликации (Master/Slaves или Replicas).
-
-5 — терминал с выводом consumer.py при отключённой rmq01 (получение сообщения).
-
-Выводы
-Кластер RabbitMQ успешно настроен и синхронизирован.
-
-HA‑политика ha-all корректно реплицирует очереди между нодами.
-
-Кластер демонстрирует отказоустойчивость: при отказе одной ноды сообщения доступны через вторую.
-
-После восстановления ноды кластер автоматически синхронизируется.
-
-Все этапы тестирования завершены успешно, скриншоты сделаны и сохранены.
-
-Рекомендации
-Для мониторинга кластера использовать веб‑интерфейс RabbitMQ (раздел Overview и Queues).
-
-Регулярно проверять статус нод и очередей через rabbitmqctl cluster_status и веб‑интерфейс.
-
-При необходимости масштабирования добавить дополнительные ноды по аналогичной схеме.
-
-Настроить резервное копирование конфигураций кластера.
