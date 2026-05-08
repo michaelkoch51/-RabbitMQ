@@ -18,14 +18,12 @@
 Запущены две ноды RabbitMQ в Docker‑контейнерах: rmq01 и rmq02.
 
 Вторая нода (rmq02) присоединена к кластеру первой ноды (rmq01) с помощью команд:
-
+```comands 
 rabbitmqctl stop_app;
-
 rabbitmqctl reset;
-
 rabbitmqctl join_cluster rabbit@rmq01;
-
 rabbitmqctl start_app.
+```
 
 Статус кластера проверен командой rabbitmqctl cluster_status — обе ноды присутствуют в разделах Disk Nodes и Running Nodes.
 
