@@ -33,16 +33,18 @@ rabbitmqctl start_app.
 
 Выполнена команда для создания политики высокой доступности:
 
-bash
+```bash
 docker exec rabbitmq-cluster-test-rmq01-1 rabbitmqctl set_policy ha-all ".*" '{"ha-mode":"all"}' --apply-to queues
+```
 Параметры политики:
 
 Сценарий: отключение первой ноды (rmq01) и работа через вторую ноду (rmq02).
 
 Отключение rmq01:
 
-bash
+```bash
 docker stop rabbitmq-cluster-test-rmq01-1
+```
 Отправка сообщения через rmq02:
 
 в producer.py изменён порт на 5673 (порт второй ноды);
@@ -59,8 +61,9 @@ docker stop rabbitmq-cluster-test-rmq01-1
 
 Включение rmq01 обратно:
 
-bash
+```bash
 docker start rabbitmq-cluster-test-rmq01-1
+```
 Проверка синхронизации:
 
 через 1–2 минуты открыта страница Overview в веб‑интерфейсе — обе ноды активны;
@@ -69,11 +72,4 @@ docker start rabbitmq-cluster-test-rmq01-1
 
 Вывод: кластер демонстрирует отказоустойчивость — при отказе одной ноды сообщения доступны через вторую.
 
-Результаты тестирования
-Параметр	Результат	Подтверждение
-Создание кластера	Успешно	Вывод cluster_status (2 ноды)
-HA‑политика	Применена	Поле "policy": "ha-all" в JSON, веб‑интерфейс
-Репликация очереди	Работает	Поля "slave_nodes" и "synchronised_slave_nodes" в JSON
-Отказоустойчивость	Подтверждена	Получение сообщения при отключённой rmq01
-Восстановление после сбоя	Успешно	Обе ноды активны в Overview, репликация восстановлена
 
